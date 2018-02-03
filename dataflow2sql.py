@@ -7,7 +7,6 @@ ws = wb.get_sheet_by_name('データフロー')
 
 
 def excelShaping(ws, startY=1, startX=1, endY, endX):
-	ret=[[]]
 	for y in range(startY, endY):
 		for x in range(startX, endX):
 			#  ターゲットセルの↓と→のセルを見て隣接部分に罫線があったら両者に罫線をつける
@@ -53,15 +52,36 @@ def getRect(ws, oy,ox, maxHeight, maxWidth):
 	for y in range(oy, height):
 		if ws.cell(row=oy+y, column=ox+width-1).border.right is None:
 			return None
-	return oy,ox,height,width	
-	# for x in range(ox, width):
+	return Rect.Rect(oy,ox,height,width)
 
 
 
-def serchRect(ws, startY=1, startX=1, endY, endX):
-		for y in range(startY, endY):
-			for x in range(startX, endX):
-				cell=ws.cell(row=y, column=x).border
+def searchRect(ws, startY=1, startX=1, endY, endX):
+	ret=[]
+	for y in range(startY, endY):
+		for x in range(startX, endX):
+			cell=ws.cell(row=y, column=x).border
 
-				if cell.top.style is not None and cell.left.style is not None:
-					getRect(ws, y,x, endY, endX)
+			if cell.top.style is not None and cell.left.style is not None:
+				ret.add(getRect(ws, y,x, endY, endX))
+
+	return ret
+
+def deleteDuplicateRect(rects):
+	ret=[]
+	for j in range(length):
+		target=rects[j]
+		count=0
+		for i in range(j+1,length):
+			if rects[i].x >= target.x and 
+			   rects[i].x+rects[i].width <= target.x+target.width and
+			   rects[i].y >= target.y and
+			   rects[i].y + rects[i].height <= target.y+target.height:
+			   #targetの中に包含されている四角形
+			   count+=1
+		if count != 0:
+			ret.append(target)
+	return ret
+
+temp = searchRect(ws, endX=100, endY=100)
+rects=deleteDuplicateRect(temp)
