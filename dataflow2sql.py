@@ -83,5 +83,39 @@ def deleteDuplicateRect(rects):
 			ret.append(target)
 	return ret
 
+
+def getChain(rects ,endY, endX):
+	for rect in rects:
+		ox = rect.x + rect.width
+		oy = rect.y
+		px = 0
+		py = 0
+
+		for _ in range(ox, endX):
+			px += 1
+			if cell=ws.cell(row=oy, column=ox+px).border.right.style is not None:
+				px += 1
+				break
+
+		##################
+		# ここでrectがあるか確認
+		##################
+
+		for _ in range(0, oy):
+			py -= 1
+			if cell=ws.cell(row=oy+py, column=ox+px).border.left.style is not None:
+				break
+
+		for _ in range(ox, endX):
+			px += 1
+			if cell=ws.cell(row=oy+py, column=ox+px).border.right.style is not None:
+				px += 1
+				break
+
+		##################
+		# ここでrectがあるか確認
+		##################
+	return rects
+
 temp = searchRect(ws, endX=100, endY=100)
 rects=deleteDuplicateRect(temp)
